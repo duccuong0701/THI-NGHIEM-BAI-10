@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bài 10 - Đồ thị quãng đường – thời gian | Phòng thí nghiệm 3D</title>
+<style>
+:root{--bg:#071827;--p:#102e46;--border:#376982;--text:#f0fbff;--muted:#b7d4e1;--a:#1682ec;--b:#ee8725;--gold:#ffdc78}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#145076,#061422 75%);color:var(--text);font:15px/1.5 Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid #82dfff;outline-offset:2px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;background:linear-gradient(110deg,#07355b,#137b9b,#093153);border-bottom:2px solid #6ed5f7}.brand{font-weight:800;color:#ffdf78;font-size:17px;line-height:1.4}.brand small{color:#e1f5ff;font-size:11px;display:block}h1{text-align:center;font-size:clamp(20px,2.4vw,31px);margin:0}h1 small{display:block;font-size:12px;letter-spacing:1px;color:#d7efff;margin-top:4px}.topbtn{background:#0b3552;border:1px solid #7cc2df;border-radius:10px;color:white;padding:10px 13px}
+main{max-width:1620px;margin:auto;padding:15px;display:grid;grid-template-columns:minmax(280px,315px) minmax(0,1fr);gap:14px;align-items:start}.panel{background:linear-gradient(145deg,#123a54,#0b2438);border:1px solid var(--border);border-radius:15px;overflow:hidden;box-shadow:0 10px 25px #0003}.panel h2{margin:0;background:linear-gradient(90deg,#076985,#16849d);padding:12px 16px;font-size:16px}.pad{padding:16px}label{display:block;font-weight:700;margin:14px 0 7px}input[type=range]{width:100%;accent-color:#46bafa}.val{float:right;color:var(--gold)}.muted{color:var(--muted);font-size:12px;line-height:1.5}.row{display:flex;flex-wrap:wrap;gap:7px}.chip{flex:1;border:1px solid #5e89a2;background:#173e56;border-radius:9px;color:white;padding:10px 8px;min-width:74px;font-weight:700}.chip.active{background:#067e9d;border-color:#9cf1ff}.field{margin-bottom:11px}.field[hidden]{display:none}
+.stage{height:clamp(370px,38vw,560px);position:relative;background:#9bd6f0}#scene{position:absolute;inset:0}#scene canvas{display:block;width:100%;height:100%;touch-action:none}#fallback{display:block;position:absolute;inset:0;width:100%;height:100%}.hud{position:absolute;left:10px;top:10px;padding:10px;background:#07233ae7;border:1px solid #7fdaff;border-radius:10px;font-size:12px;max-width:245px;pointer-events:none}.hud b{color:#ffe084}.tag{position:absolute;right:10px;top:10px;padding:9px 12px;background:#092b40ed;border-radius:12px;border:2px solid #73cfff;text-align:center;font-size:11px}.tag strong{display:block;font-size:25px;color:#a9ffdc;margin-top:2px}.hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:#071d2de0;padding:7px 10px;border-radius:20px;white-space:nowrap;font-size:11px;pointer-events:none}.controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:11px;background:#174058}.btn{border:0;border-radius:9px;padding:11px 14px;font-weight:bold;color:white}.start{background:linear-gradient(#1dc880,#09854e)}.pause{background:linear-gradient(#ffc25b,#e3851c);color:#122535}.reset{background:linear-gradient(#379aff,#0759ae)}.alt{background:#255673;border:1px solid #6994ae}.btn:disabled{opacity:.45;cursor:not-allowed}.status{color:#ffe59b;font-size:13px;min-height:19px}.stage-status{padding:11px 14px;color:#c6e4f7;font-size:12px;background:#0b2638}
+.analysis-grid{grid-column:1/-1;display:grid;grid-template-columns:minmax(360px,430px) minmax(0,1fr);gap:14px;align-items:start}.graph-section,.table-section{grid-column:auto}.graph-section{border:2px solid #40a4d3;box-shadow:0 0 0 4px #40a4d319,0 10px 25px #0003}.graph-section h2{background:linear-gradient(90deg,#0879a4,#0b6087);font-size:19px;padding:14px 17px}.graph-head{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}.graph-head .sub{font-size:12px;color:#caeaff;font-weight:400}.graphpad{padding:16px 19px 18px}.graph-wrap{background:#eff8ff;border:1px solid #abd9ee;padding:7px;border-radius:12px}#graph{display:block;width:100%;height:clamp(380px,46vw,560px);background:#f3fbff;border-radius:9px;touch-action:none;cursor:crosshair}.legend{display:flex;flex-wrap:wrap;align-items:center;gap:17px;font-size:13px;margin:12px 0 5px}.dot{display:inline-block;width:25px;height:5px;border-radius:5px;margin-right:7px;vertical-align:middle}.graphbar{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px}.readout{padding:10px 13px;background:#133d52;border:1px solid #407690;border-radius:10px;color:#effbff;font-weight:700;min-height:42px}.line-chip{background:#16394e;border:1px solid #3e6e87;padding:8px 10px;border-radius:9px;color:#ccefff;font-size:12px}
+.tablehead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#123b51;padding:11px 16px;border-bottom:1px solid #34657e}.tablehead h2{padding:0;background:none}.tableactions{display:flex;gap:7px;flex-wrap:wrap}.table-wrap{overflow:auto;padding:13px 16px 16px;max-height:640px}table{width:100%;border-collapse:collapse;font-size:14px}td,th{border:1px solid #3d7189;padding:12px 10px;text-align:center}th{background:#165874;font-size:14px;position:sticky;top:0;z-index:1}td{background:#0a2e46;font-variant-numeric:tabular-nums}.empty{color:#a8cfe1;padding:18px}.tablehead+.table-wrap~.muted{padding:0 16px 13px}.foot{margin-top:12px;color:#96bbcc;font-size:11px}
+@media(max-width:1100px){.analysis-grid{grid-template-columns:1fr}}@media(max-width:950px){main{grid-template-columns:1fr}.settings .pad{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.settings .full{grid-column:1/-1}.stage{height:480px}}
+@media(max-width:600px){main{padding:10px}.settings .pad{display:block}.stage{height:350px}.hud{font-size:10px;padding:7px;max-width:180px}.tag{padding:5px}.tag strong{font-size:18px}.hint{width:94%;text-align:center;white-space:normal;font-size:10px}.graphpad{padding:8px}.graph-section h2{font-size:17px}.graph-head .sub{display:none}.graph-wrap{padding:2px}#graph{height:330px}.btn{padding:10px;font-size:12px}.row .chip{font-size:12px}.table-wrap{padding:9px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand">📚 Dạy học khám phá<br>– Thầy Nguyễn Đức Cường<small>PHÒNG THÍ NGHIỆM VẬT LÍ 3D</small></div>
+ <h1>BÀI 10: ĐỒ THỊ QUÃNG ĐƯỜNG – THỜI GIAN<small>KHOA HỌC TỰ NHIÊN 7 · MÔ PHỎNG TƯƠNG TÁC</small></h1>
+ <button class="topbtn" id="fullscreen">⛶ Toàn màn hình</button>
+</header>
+<main>
+<section class="panel settings"><h2>⚙️ BẢNG ĐIỀU KHIỂN</h2><div class="pad">
+ <div class="field full"><label>Số lượng xe</label><div class="row"><button class="chip active" data-count="1" aria-pressed="true">🚙 1 xe</button><button class="chip" data-count="2" aria-pressed="false">🚙🚗 2 xe</button></div></div>
+ <div class="field full"><label>Kiểu chuyển động</label><div class="row"><button class="chip active" data-mode="uniform">🚗 Đều</button><button class="chip" data-mode="stop">⏸ Dừng nghỉ</button><button class="chip" data-mode="change">⚡ Đổi tốc độ</button></div></div>
+ <div class="field"><label for="va">Tốc độ xe xanh <span class="val" id="vaLabel">36 km/h</span></label><input id="va" type="range" min="10" max="100" step="2" value="36"></div>
+ <div class="field" id="orangeField" hidden><label for="vb">Tốc độ xe cam <span class="val" id="vbLabel">54 km/h</span></label><input id="vb" type="range" min="10" max="100" step="2" value="54"></div>
+ <div id="pieceControls" class="full" hidden>
+   <div class="field"><label>Thời điểm đổi trạng thái <span class="val" id="changeLabel">8 s</span></label><input id="changeAt" type="range" min="3" max="18" step="1" value="8"></div>
+   <div class="field" id="changeSpeedBox" hidden><label>Tốc độ mới xe xanh <span class="val" id="va2Label">72 km/h</span></label><input id="va2" type="range" min="0" max="120" step="2" value="72"></div>
+   <div class="field" id="stopBox" hidden><label>Thời gian dừng <span class="val" id="stopLabel">5 s</span></label><input id="stopDur" type="range" min="2" max="10" step="1" value="5"></div>
+ </div>
+ <div class="field"><label>Thời gian quan sát <span class="val" id="durationLabel">25 s</span></label><input id="duration" type="range" min="15" max="40" step="5" value="25"></div>
+ <div class="field"><label>Tốc độ phát mô phỏng <span class="val" id="simLabel">×3</span></label><input id="simSpeed" type="range" min="1" max="10" value="3"><div class="muted">Chỉ thay đổi tốc độ phát, không thay đổi quãng đường theo thời gian.</div></div>
+ </div></section>
+<section class="panel"><h2>🏁 ĐƯỜNG ĐUA 3D ĐỒNG BỘ VỚI ĐỒ THỊ</h2>
+ <div class="stage" id="stage"><canvas id="fallback" width="1100" height="600" aria-label="Minh họa đường đua khi chưa tải 3D"></canvas><div id="scene"></div><div class="hud">🔵 Xe xanh: <b id="blueS">0,0 m</b><div id="orangeHud" hidden>🟠 Xe cam: <b id="orangeS">0,0 m</b></div><div>Trạng thái: <b id="motionStatus">Sẵn sàng</b></div></div><div class="tag">THỜI GIAN<strong id="bigClock">0,0 s</strong></div><div class="hint" id="stageHint">Kéo xoay góc nhìn · Cuộn để phóng to, thu nhỏ</div></div>
+ <div class="controls"><button class="btn start" id="start">▶ BẮT ĐẦU</button><button class="btn pause" id="pause" disabled>⏸ TẠM DỪNG</button><button class="btn reset" id="reset">↻ LÀM LẠI</button><button class="btn alt" id="snapshot">＋ GHI MỐC</button></div>
+ <div class="stage-status" id="message" role="status">Quan sát xe di chuyển và đường biểu diễn được vẽ đồng thời theo thời gian.</div>
+</section>
+<div class="analysis-grid">
+<section class="panel table-section"><div class="tablehead"><h2>📋 BẢNG SỐ LIỆU: THỜI GIAN VÀ QUÃNG ĐƯỜNG</h2><div class="tableactions"><button class="btn alt" id="autoTable">☷ Ghi mốc 5 giây</button><button class="btn alt" id="csv">⬇ Xuất CSV</button><button class="btn reset" id="clear">🗑 Xóa bảng</button></div></div>
+<div class="table-wrap"><table><thead><tr><th>Mốc đo</th><th>Thời gian t (s)</th><th>Quãng đường xe xanh s (m)</th><th id="orangeHead" hidden>Quãng đường xe cam s (m)</th></tr></thead><tbody id="records"><tr><td colspan="3" class="empty">Chưa có số liệu. Hãy chạy mô phỏng và ghi mốc thời gian.</td></tr></tbody></table></div>
+<div class="status" id="tableMsg" style="padding:0 16px 14px"></div>
+</section>
+<section class="panel graph-section"><h2 class="graph-head"><span>📈 ĐỒ THỊ QUÃNG ĐƯỜNG – THỜI GIAN</span><span class="sub">TRỌNG TÂM BÀI HỌC · TRỤC NGANG: t (s) · TRỤC ĐỨNG: s (m)</span></h2>
+ <div class="graphpad"><div class="graph-wrap"><canvas id="graph" aria-label="Đồ thị quãng đường theo thời gian có thể rê chuột để đọc tọa độ"></canvas></div>
+ <div class="legend"><span><i class="dot" style="background:var(--a)"></i>Xe xanh</span><span id="orangeLegend" hidden><i class="dot" style="background:var(--b)"></i>Xe cam</span><span class="line-chip">Nét đậm: quãng đường đã đi</span><span class="line-chip">Nét đứt: đường dự kiến (nếu bật)</span><span class="line-chip">Đường tham chiếu dọc và ngang hỗ trợ đọc tọa độ</span></div>
+ <div class="readout" id="hoverInfo" aria-live="polite">Di chuyển chuột hoặc chạm vào đồ thị để đọc thời gian và quãng đường.</div>
+ <div class="graphbar"><div class="row"><button class="btn alt" id="showFull" aria-pressed="false">👁 Hiện đường dự kiến</button><button class="btn alt" id="downloadGraph">⬇ Lưu ảnh đồ thị</button></div><span class="muted">Mốc thời gian trên đồ thị được chia theo từng 5 giây</span></div>
+ </div>
+</section>
+</div>
+</main>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script>
+<script>
+(() => {'use strict';
+const $=id=>document.getElementById(id);
+const fmt=(n,d=1)=>Number(n).toLocaleString('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d});
+const st={carCount:1,mode:'uniform',va:36,vb:54,va2:72,changeAt:8,stopDur:5,duration:25,simSpeed:3,t:0,running:false,paused:false,records:[],showFull:false,hover:null};
+const speedA=t=>st.mode==='uniform'?st.va/3.6:st.mode==='stop'?(t>=st.changeAt&&t<st.changeAt+st.stopDur?0:st.va/3.6):(t<st.changeAt?st.va/3.6:st.va2/3.6);
+const sa=t=>{t=Math.max(0,t);const v=st.va/3.6;if(st.mode==='uniform')return v*t;if(st.mode==='stop')return v*(t-Math.max(0,Math.min(st.stopDur,t-st.changeAt)));return v*Math.min(t,st.changeAt)+(st.va2/3.6)*Math.max(0,t-st.changeAt)};
+const sb=t=>st.vb/3.6*Math.max(0,t);
+const maxTravelDistance=()=>Math.max(1,sa(st.duration),st.carCount===2?sb(st.duration):0);
+let THREE,OrbitControls,scene,camera,renderer,orbit,blue,orange,sun,road,roadTexture,nightLights=[];
+const distanceSigns=[];
+function updateSigns(){for(const item of distanceSigns){const c=item.canvas,ctx=c.getContext('2d');ctx.fillStyle='#eafcff';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#093b55';ctx.font='bold 70px Arial';ctx.textAlign='center';ctx.fillText(Math.round(item.x/200*maxTravelDistance())+' m',128,89);item.tex.needsUpdate=true;}}
+function material(c,metalness=0){return new THREE.MeshStandardMaterial({color:c,roughness:.7,metalness})}
+function cube(parent,w,h,d,c,x,y,z){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material(c));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
+function ball(parent,r,c,x,y,z){let m=new THREE.Mesh(new THREE.SphereGeometry(r,12,10),material(c));m.position.set(x,y,z);parent.add(m);return m}
+function wheel(parent,x,z){let m=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.4,16),material(0x151c24));m.rotation.x=Math.PI/2;m.position.set(x,.72,z);parent.add(m);let hub=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.43,12),material(0xbfc8d3));hub.rotation.x=Math.PI/2;hub.position.copy(m.position);parent.add(hub)}
+function makeCar(color){let group=new THREE.Group();scene.add(group);cube(group,5,1.1,2.5,color,0,1.3,0);cube(group,2.8,1.05,2.2,0x9dcbe3,-.25,2.32,0);for(let x of [-1.65,1.65])for(let z of [-1.25,1.25])wheel(group,x,z);for(let z of [-.8,.8]){cube(group,.12,.3,.35,0xffffb7,2.57,1.4,z);cube(group,.12,.3,.35,0xff3333,-2.57,1.4,z)}return group}
+function init3D(){scene=new THREE.Scene();scene.background=new THREE.Color(0x9cd8f3);scene.fog=new THREE.Fog(0x9cd8f3,110,340);camera=new THREE.PerspectiveCamera(48,1,.1,500);camera.position.set(-15,34,67);camera.lookAt(35,0,0);
+renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;$('scene').appendChild(renderer.domElement);
+orbit=new OrbitControls(camera,renderer.domElement);orbit.target.set(35,0,0);orbit.enableDamping=true;orbit.minDistance=12;orbit.maxDistance=170;orbit.maxPolarAngle=Math.PI/2.05;
+scene.add(new THREE.HemisphereLight(0xffffff,0x52794d,1.9));sun=new THREE.DirectionalLight(0xffffff,2.5);sun.position.set(-50,80,35);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-180;sun.shadow.camera.right=180;sun.shadow.camera.top=120;sun.shadow.camera.bottom=-120;scene.add(sun);
+cube(scene,450,.2,120,0x71b773,80,-.25,0);road=cube(scene,420,.14,22,0x303b44,80,-.08,0);
+for(let x=-110;x<270;x+=8){cube(scene,3,.025,.22,0xffefcc,x,.025,0);cube(scene,3,.025,.2,0xf0ebd5,x,.025,-10);cube(scene,3,.025,.2,0xf0ebd5,x,.025,10)}
+for(let side of [-1,1]){cube(scene,420,.2,.25,0xced8db,80,1.1,side*13);for(let x=-110;x<270;x+=10)cube(scene,.25,2,.25,0x8fa5b3,x,1,side*13)}
+for(let x=-100;x<260;x+=16){for(let z of [-24,26]){cube(scene,.8,4,.8,0x795f43,x,2,z);ball(scene,4.5,0x378e53,x,6,z);ball(scene,3,0x4eac5b,x+2,8,z)}}
+for(let x=-105;x<255;x+=30){cube(scene,8,8+(x+105)%4,9,0xacc7c9,x,4,-52)}
+for(let x=0;x<=200;x+=25){cube(scene,.3,2,.3,0xd4e5ed,x,1,12);cube(scene,2,1.4,.18,0x186c8c,x,2.5,12);const cv=document.createElement('canvas');cv.width=256;cv.height=128;const cx=cv.getContext('2d');cx.fillStyle='#eafcff';cx.fillRect(0,0,256,128);cx.fillStyle='#093b55';cx.font='bold 70px Arial';cx.textAlign='center';cx.fillText(Math.round(x/200*maxTravelDistance())+' m',128,89);const tex=new THREE.CanvasTexture(cv);distanceSigns.push({x,canvas:cv,tex});let sign=new THREE.Mesh(new THREE.PlaneGeometry(2,1.2),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));sign.position.set(x,2.5,12.12);scene.add(sign)}
+for(let z of [-5,5])for(let i=0;i<7;i++)cube(scene,.8,.05,1.3,i%2?0xffffff:0x20242b,i*.8,.03,z);
+blue=makeCar(0x087af2);orange=makeCar(0xff8c25);updateVehicles();
+const ro=new ResizeObserver(resize);ro.observe($('scene'));resize()}
+function resize(){let e=$('scene'),w=e.clientWidth,h=e.clientHeight;if(!w||!h)return;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)}
+function updateVehicles(){if(!blue)return;
+ const full=maxTravelDistance(), factor=200/full;
+ blue.position.set(Math.min(200,sa(st.t)*factor),0,-5);
+ orange.position.set(Math.min(200,sb(st.t)*factor),0,5);
+ orange.visible=st.carCount===2;
+}
+
+let previous=performance.now();
+function reset(){st.t=0;st.running=false;st.paused=false;st.hover=null;$('pause').disabled=true;$('pause').textContent='⏸ TẠM DỪNG';$('start').textContent='▶ BẮT ĐẦU';$('message').textContent='Đã đặt lại. Sẵn sàng quan sát đồ thị quãng đường – thời gian.';refresh();}
+function refresh(){updateVehicles();$('bigClock').textContent=fmt(st.t)+' s';$('blueS').textContent=fmt(sa(st.t))+' m';$('orangeS').textContent=fmt(sb(st.t))+' m';$('motionStatus').textContent=st.mode==='stop'&&speedA(st.t)===0?'Xe xanh đang dừng nghỉ':st.mode==='change'&&st.t>=st.changeAt?'Xe xanh đã đổi tốc độ':st.running?'Đang chuyển động':'Sẵn sàng';drawGraph();}
+function setEnabled(){const two=st.carCount===2;$('orangeField').hidden=!two;$('orangeLegend').hidden=!two;$('orangeHead').hidden=!two;$('orangeHud').hidden=!two; if(orange)orange.visible=two;}
+function renderTable(){const el=$('records');if(!st.records.length){el.innerHTML=`<tr><td colspan="${st.carCount===2?4:3}" class="empty">Chưa có số liệu. Hãy chạy mô phỏng và ghi mốc thời gian.</td></tr>`;return;}el.innerHTML=st.records.map((r,i)=>`<tr><td>${i+1}</td><td><b>${fmt(r.t,1)} s</b></td><td style="color:#9dd1ff;font-weight:700">${fmt(r.a,1)} m</td>${st.carCount===2?`<td style="color:#ffd0a8;font-weight:700">${fmt(r.b,1)} m</td>`:''}</tr>`).join('');}
+function record(t){t=Math.min(st.duration,Math.max(0,t));if(st.records.some(r=>Math.abs(r.t-t)<.03))return false;st.records.push({t,a:sa(t),b:sb(t)});st.records.sort((a,b)=>a.t-b.t);renderTable();return true;}
+function paramChange(){st.records=[];renderTable();reset();updateSigns();refresh();$('tableMsg').textContent='Đã làm mới dữ liệu theo thiết lập mới.';}
+const graph=$('graph'),ctx=graph.getContext('2d');let graphBox={};
+function niceCeil(value){const n=Math.max(1,value),base=Math.pow(10,Math.floor(Math.log10(n)));const s=n/base;return (s<=1?1:s<=2?2:s<=2.5?2.5:s<=5?5:10)*base;}
+function drawGraph(){const rect=graph.getBoundingClientRect();const w=Math.max(320,rect.width||950),h=Math.max(280,rect.height||470),dpr=Math.min(window.devicePixelRatio||1,1.6);
+  if(graph.width!==Math.round(w*dpr)||graph.height!==Math.round(h*dpr)){graph.width=Math.round(w*dpr);graph.height=Math.round(h*dpr)} ctx.setTransform(dpr,0,0,dpr,0,0);
+  const L=w<520?62:86,R=w<520?13:34,T=34,B=62,pw=w-L-R,ph=h-T-B,maxS=niceCeil(maxTravelDistance()*1.07);graphBox={L,R,T,B,pw,ph,maxS,w,h};ctx.clearRect(0,0,w,h);ctx.fillStyle='#f3fbff';ctx.fillRect(0,0,w,h);
+  ctx.font=`${w<520?11:14}px Arial`;ctx.strokeStyle='#c9dfeb';ctx.fillStyle='#2b4f65';ctx.lineWidth=1;
+  for(let t=0;t<=st.duration;t+=5){const x=L+pw*t/st.duration;ctx.beginPath();ctx.moveTo(x,T);ctx.lineTo(x,T+ph);ctx.stroke();ctx.textAlign='center';ctx.fillText(fmt(t,0),x,T+ph+22)}
+  for(let i=0;i<=5;i++){const y=T+ph-i*ph/5;ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(L+pw,y);ctx.stroke();ctx.textAlign='right';ctx.fillText(fmt(maxS*i/5,0),L-9,y+5)}
+  ctx.fillStyle='#173a51';ctx.font=`bold ${w<520?12:16}px Arial`;ctx.textAlign='center';ctx.fillText('Thời gian t (s)',L+pw/2,h-13);ctx.save();ctx.translate(17,T+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText('Quãng đường s (m)',0,0);ctx.restore();
+  ctx.strokeStyle='#24475e';ctx.lineWidth=2;ctx.strokeRect(L,T,pw,ph);
+  const drawLine=(fn,color,end,dashed)=>{ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=dashed?2:4.2;ctx.setLineDash(dashed?[7,7]:[]);const N=140;for(let i=0;i<=N;i++){const t=end*i/N,x=L+pw*t/st.duration,y=T+ph*(1-fn(t)/maxS);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();ctx.setLineDash([])};
+  if(st.showFull){drawLine(sa,'#89bce9',st.duration,true);if(st.carCount===2)drawLine(sb,'#ecba8f',st.duration,true)}
+  drawLine(sa,'#1682ec',st.t,false);if(st.carCount===2)drawLine(sb,'#ee8725',st.t,false);
+  for(const [fn,color] of (st.carCount===2?[[sa,'#1682ec'],[sb,'#ee8725']]:[[sa,'#1682ec']])){const x=L+pw*st.t/st.duration,y=T+ph*(1-fn(st.t)/maxS);ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,5.8,0,2*Math.PI);ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke()}
+  if(st.hover!==null){const t=st.hover,x=L+pw*t/st.duration;ctx.save();ctx.setLineDash([5,5]);ctx.strokeStyle='#708596';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x,T);ctx.lineTo(x,T+ph);ctx.stroke();
+    const sA=sa(t), yA=T+ph*(1-sA/maxS);ctx.strokeStyle='#1682ec';ctx.beginPath();ctx.moveTo(L,yA);ctx.lineTo(x,yA);ctx.stroke();ctx.fillStyle='#1682ec';ctx.beginPath();ctx.arc(x,yA,6,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    let yB=null,sB=null;
+    if(st.carCount===2){sB=sb(t);yB=T+ph*(1-sB/maxS);ctx.strokeStyle='#ee8725';ctx.beginPath();ctx.moveTo(L,yB);ctx.lineTo(x,yB);ctx.stroke();ctx.fillStyle='#ee8725';ctx.beginPath();ctx.arc(x,yB,6,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();}
+    // Show the measured distance right on the horizontal guide, like time on the vertical guide.
+    // Keep overlapping labels apart when the two cars have nearly the same distance.
+    ctx.setLineDash([]);
+    function distanceLabel(distance,referenceY,color,shift=0){
+      const value=fmt(distance)+' m';ctx.font=`bold ${w<520?11:12}px Arial`;
+      const badgeW=ctx.measureText(value).width+13,badgeH=22;
+      const badgeX=Math.max(4,L-badgeW-8),badgeY=Math.max(T,Math.min(T+ph-badgeH,referenceY-badgeH/2+shift));
+      ctx.fillStyle=color;ctx.fillRect(badgeX,badgeY,badgeW,badgeH);
+      ctx.strokeStyle='rgba(255,255,255,.92)';ctx.lineWidth=1;ctx.strokeRect(badgeX+.5,badgeY+.5,badgeW-1,badgeH-1);
+      ctx.fillStyle='#ffffff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(value,badgeX+badgeW/2,badgeY+badgeH/2);ctx.textBaseline='alphabetic';
+    }
+    distanceLabel(sA,yA,'#1475bd');
+    if(st.carCount===2)distanceLabel(sB,yB,'#cf6c14',Math.abs(yA-yB)<27?(yB>=yA?24:-24):0);
+    ctx.fillStyle='#163d55';ctx.font='bold 13px Arial';ctx.textAlign='left';ctx.fillText('t = '+fmt(t)+' s',Math.min(w-125,x+10),T+19);ctx.restore()}
+}
+function readGraph(e){const r=graph.getBoundingClientRect(),x=e.clientX-r.left;const t=Math.max(0,Math.min(st.showFull?st.duration:st.t,(x-graphBox.L)/graphBox.pw*st.duration));st.hover=t;const s1=fmt(sa(t)),s2=fmt(sb(t));$('hoverInfo').textContent='Thời gian: '+fmt(t)+' s  |  Xe xanh: '+s1+' m'+(st.carCount===2?'  |  Xe cam: '+s2+' m':'');drawGraph()}
+graph.addEventListener('pointermove',readGraph);graph.addEventListener('pointerdown',readGraph);graph.addEventListener('pointerleave',()=>{st.hover=null;$('hoverInfo').textContent='Di chuyển chuột hoặc chạm vào đồ thị để đọc thời gian và quãng đường.';drawGraph()});
+function drawFallback(){if(renderer)return;const c=$('fallback'),rect=c.getBoundingClientRect(),w=Math.max(320,rect.width),h=Math.max(260,rect.height),dpr=Math.min(window.devicePixelRatio||1,1.4);if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr)}const q=c.getContext('2d');q.setTransform(dpr,0,0,dpr,0,0);
+const sky=q.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#83c4ea');sky.addColorStop(.63,'#d4edf8');sky.addColorStop(.64,'#72a66d');sky.addColorStop(1,'#4f874c');q.fillStyle=sky;q.fillRect(0,0,w,h);
+q.fillStyle='#576b71';for(let i=0;i<14;i++){const x=i*w/13;q.fillRect(x,h*.56-(i%3+1)*15,24,h*.08+(i%3+1)*15)}
+const roadY=h*.62, roadH=h*.31;q.fillStyle='#314150';q.beginPath();q.moveTo(w*.11,roadY+roadH);q.lineTo(w*.86,roadY+roadH);q.lineTo(w*.64,roadY);q.lineTo(w*.36,roadY);q.closePath();q.fill();q.strokeStyle='#f4f0c7';q.lineWidth=3;q.setLineDash([15,18]);q.beginPath();q.moveTo(w*.49,roadY+roadH);q.lineTo(w*.5,roadY);q.stroke();q.setLineDash([]);
+const max=maxTravelDistance(),place=(s,lane)=>({x:w*.31+(s/max)*w*.4,y:roadY+roadH*(lane===0?.68:.33) -(s/max)*roadH*.62});
+for(let idx=0;idx<2;idx++){if(idx===1&&st.carCount===1)continue;const s=idx===0?sa(st.t):sb(st.t),p=place(s,idx),size=18+(s/max)*8;q.fillStyle=idx===0?'#1682ec':'#ee8725';q.fillRect(p.x-size,p.y-size*.4,size*2,size*.75);q.fillStyle='#d1efff';q.fillRect(p.x-4,p.y-size*.68,size*.9,size*.35);q.fillStyle='#172029';q.fillRect(p.x-size*.6,p.y+size*.25,7,6);q.fillRect(p.x+size*.35,p.y+size*.25,7,6)}q.font='bold 13px Arial';q.fillStyle='#fff';q.fillText('Chờ tải mô hình 3D · Đồ thị vẫn hoạt động',14,h-16)}
+function loop(now){const dt=Math.min(.07,Math.max(0,(now-previous)/1000));previous=now;if(st.running&&!st.paused){st.t=Math.min(st.duration,st.t+dt*st.simSpeed);if(st.t>=st.duration){st.running=false;$('pause').disabled=true;$('start').textContent='▶ CHẠY LẠI';$('message').textContent='Thí nghiệm hoàn thành. Quan sát đồ thị và ghi bảng số liệu.'}refresh();}
+if(orbit)orbit.update();if(renderer)renderer.render(scene,camera);else drawFallback();requestAnimationFrame(loop)}
+for(const b of document.querySelectorAll('[data-count]'))b.addEventListener('click',()=>{document.querySelectorAll('[data-count]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))});st.carCount=Number(b.dataset.count);setEnabled();paramChange()});
+for(const b of document.querySelectorAll('[data-mode]'))b.addEventListener('click',()=>{document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));st.mode=b.dataset.mode;$('pieceControls').hidden=st.mode==='uniform';$('changeSpeedBox').hidden=st.mode!=='change';$('stopBox').hidden=st.mode!=='stop';paramChange()});
+for(const [id,key,label,suffix] of [['va','va','vaLabel',' km/h'],['vb','vb','vbLabel',' km/h'],['va2','va2','va2Label',' km/h'],['changeAt','changeAt','changeLabel',' s'],['stopDur','stopDur','stopLabel',' s'],['duration','duration','durationLabel',' s'],['simSpeed','simSpeed','simLabel','×']])$(id).addEventListener('input',e=>{st[key]=Number(e.target.value);$(label).textContent=id==='simSpeed'?'×'+st[key]:st[key]+suffix;if(id!=='simSpeed')paramChange()});
+$('start').addEventListener('click',()=>{if(st.t>=st.duration)reset();st.running=true;st.paused=false;$('pause').disabled=false;$('pause').textContent='⏸ TẠM DỪNG';$('start').textContent='▶ ĐANG CHẠY';$('message').textContent='Đang chạy: chú ý đồ thị được vẽ đồng thời với chuyển động của xe.'});
+$('pause').addEventListener('click',()=>{if(!st.running)return;st.paused=!st.paused;$('pause').textContent=st.paused?'▶ TIẾP TỤC':'⏸ TẠM DỪNG';$('start').textContent=st.paused?'▶ TIẾP TỤC':'▶ ĐANG CHẠY'});
+$('reset').addEventListener('click',reset);
+$('snapshot').addEventListener('click',()=>{$('tableMsg').textContent=record(st.t)?'Đã ghi dữ liệu tại t = '+fmt(st.t)+' s.':'Thời điểm này đã có trong bảng.'});
+$('autoTable').addEventListener('click',()=>{for(let t=0;t<=st.t+1e-6;t+=5)record(t);$('tableMsg').textContent='Đã ghi các mốc thời gian 5 giây đến t = '+fmt(st.t)+' s.'});
+$('clear').addEventListener('click',()=>{st.records=[];renderTable();$('tableMsg').textContent='Đã xóa bảng.'});
+$('csv').addEventListener('click',()=>{if(!st.records.length){$('tableMsg').textContent='Chưa có dữ liệu để xuất.';return}const head=st.carCount===2?['Moc','Thoi gian (s)','Quang duong xe xanh (m)','Quang duong xe cam (m)']:['Moc','Thoi gian (s)','Quang duong xe xanh (m)'];const rows=[head,...st.records.map((r,i)=>st.carCount===2?[i+1,r.t.toFixed(2),r.a.toFixed(2),r.b.toFixed(2)]:[i+1,r.t.toFixed(2),r.a.toFixed(2)])];const csv='\ufeff'+rows.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(';')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='bai_10_quang_duong_thoi_gian.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)});
+$('showFull').addEventListener('click',()=>{st.showFull=!st.showFull;$('showFull').textContent=st.showFull?'👁 Ẩn đường dự kiến':'👁 Hiện đường dự kiến';$('showFull').setAttribute('aria-pressed',String(st.showFull));drawGraph()});
+$('downloadGraph').addEventListener('click',()=>{drawGraph();const a=document.createElement('a');a.href=graph.toDataURL('image/png');a.download='bai_10_do_thi_quang_duong_thoi_gian.png';a.click()});
+$('fullscreen').addEventListener('click',()=>{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.()});
+async function load3D(){try{const lib=await import('three');const addon=await import('three/addons/controls/OrbitControls.js');THREE=lib;OrbitControls=addon.OrbitControls;init3D();updateSigns();updateVehicles();$('fallback').style.display='none';$('stageHint').textContent='Kéo xoay góc nhìn · Cuộn để phóng to, thu nhỏ';}catch(e){console.warn('Không tải được Three.js, hiển thị bản dự phòng:',e);$('stageHint').textContent='Chưa tải được thư viện 3D; mở trang khi có Internet để xem đúng bản đồ gốc.';}}
+setEnabled();renderTable();reset();drawFallback();requestAnimationFrame(loop);load3D();
+})();
+</script></body></html>
